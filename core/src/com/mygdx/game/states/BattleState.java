@@ -2,6 +2,7 @@ package com.mygdx.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -42,7 +43,8 @@ public class BattleState extends GameState {
         stage.addActor(table);
 
         // Кнопка возврата в главное меню
-        TextButton menuButton = new TextButton("В меню", skin);
+        TextButton menuButton = new TextButton("В меню", skin, "красный-1");
+//        menuButton.setColor(Color.RED); // просто покрасить кнопку в красный
 
         table.add(menuButton).width(120).height(40);
 
@@ -56,7 +58,9 @@ public class BattleState extends GameState {
 
     @Override
     public void render(SpriteBatch batch) {
-        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
+        // устанавливает цвет очистки экрана.
+        Gdx.gl.glClearColor(0f, 0.7f, 0f, 1f); // немного зеленый
+        // заливает экран этим цветом перед отрисовкой UI
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.draw();
     }
