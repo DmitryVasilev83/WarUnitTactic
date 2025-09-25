@@ -34,7 +34,7 @@ public class MySkin {
         textButtonStyle.up = skin.newDrawable("white", Color.LIGHT_GRAY); // фон кнопки в обычном состоянии
         textButtonStyle.down = skin.newDrawable("white", Color.DARK_GRAY); // цвет кнопки при нажатии
         textButtonStyle.over = skin.newDrawable("white", Color.WHITE); // цвет кнопки при наведении
-        skin.add("серый-1", textButtonStyle);
+        skin.add("default", textButtonStyle);
 
         TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
         textButtonStyle2.font = skin.getFont("default-font");

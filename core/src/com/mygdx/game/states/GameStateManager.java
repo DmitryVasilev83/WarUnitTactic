@@ -63,6 +63,7 @@ public class GameStateManager{
         return application;
     }
 
+    // заглушка
     public void setScreen(MainMenuState mainMenuState) {
     }
 }
