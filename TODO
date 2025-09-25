@@ -1,0 +1,2 @@
+1. Сделать png для разных типов поверхности
+Убедись, что `AssetManager` загружает эти текстуры в `GameApplication.create()` или в `BattleSetupState`.

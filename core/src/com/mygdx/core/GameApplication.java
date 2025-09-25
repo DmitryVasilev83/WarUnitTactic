@@ -38,14 +38,19 @@ public class GameApplication extends Game {
 		batch = new SpriteBatch();
 		assetManager = new AssetManager();
 
+//		loadAssets();
 		// Инициализация менеджера состояний
 		stateManager = new GameStateManager(this);
 		stateManager.pushState(new MainMenuState(stateManager));
+
+//		setupInputProcessing();
 	}
 
 	@Override
 	public void render() {
 		float deltaTime = Gdx.graphics.getDeltaTime();
+
+//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// Обновление и рендеринг текущего состояния
 		stateManager.update(deltaTime);
@@ -72,3 +77,4 @@ public class GameApplication extends Game {
 		return assetManager;
 	}
 }
+

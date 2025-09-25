@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -23,6 +24,13 @@ public class BattleState extends GameState {
     private Viewport viewport;
     private Stage stage;
     private Skin skin;
+//    private GridMap gridMap;
+    private static final float TILE_SIZE = 64f; // размер квадрата на карте
+
+//    private BattleManager battleManager;
+//    private EntityManager entityManager;
+//    private List<GameSystem> systems;
+//    private UIManager uiManager;
 
     public BattleState(final GameStateManager game) {
         super(game);
@@ -31,6 +39,9 @@ public class BattleState extends GameState {
         camera = new OrthographicCamera();
         viewport = new FitViewport(800, 600, camera);
         stage = new Stage(viewport, stateManager.getApplication().getBatch());
+
+        // Создаём карту 10x10
+//        gridMap = new GridMap(10, 10, TILE_SIZE);
 
         Gdx.input.setInputProcessor(stage);
 
@@ -58,21 +69,45 @@ public class BattleState extends GameState {
 
     @Override
     public void render(SpriteBatch batch) {
-        // устанавливает цвет очистки экрана.
-        Gdx.gl.glClearColor(0f, 0.7f, 0f, 1f); // немного зеленый
-        // заливает экран этим цветом перед отрисовкой UI
+
+//        Gdx.gl.glClearColor(0f, 0.7f, 0f, 1f); // устанавливает цвет очистки экрана. Слегка зеленый
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // заливает экран этим цветом перед отрисовкой UI
+
+        Gdx.gl.glClearColor(0.2f, 0.3f, 0.2f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
+
+        // Сначала рисуем карту
+//        gridMap.render(batch);
+
+        // Потом — сущности (через RenderSystem, но пока просто заглушка)
+        // В будущем: battleManager.getRenderSystem().render(batch);
+
+        // Потом — UI
         stage.draw();
     }
 
+//    public GridMap getGridMap() {
+//        return gridMap;
+//    }
+
     @Override
     public void update(float deltaTime) {
+
         stage.act(deltaTime);
+//        battleManager.update(deltaTime);
+//
+//        for (GameSystem system : systems) {
+//            system.update(deltaTime);
+//        }
+//
+//        uiManager.update(deltaTime);
     }
 
     @Override
-    public void enter() {
-        Gdx.input.setInputProcessor(stage);
+    public void enter() {Gdx.input.setInputProcessor(stage);
     }
 
     @Override
@@ -90,3 +125,6 @@ public class BattleState extends GameState {
 
     }
 }
+
+
+

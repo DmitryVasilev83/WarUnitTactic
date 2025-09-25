@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -108,14 +109,14 @@ import com.mygdx.game.ui.MySkin;
 
 public class MainMenuState extends GameState {
     private Table table;
+    private Stage uiStage;
+    private TextButton startButton, settingsButton;
 
     public MainMenuState(GameStateManager stateManager) {
         super(stateManager);
-
         table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
-
         createUI();
     }
 
