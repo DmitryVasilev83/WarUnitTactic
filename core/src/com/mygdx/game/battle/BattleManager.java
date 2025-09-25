@@ -1,8 +1,7 @@
 package com.mygdx.game.battle;
 
+import com.sun.java.swing.action.ActionManager;
 
-
-//
 //public class BattleManager {
 //    private TurnManager turnManager;
 //    private GridMap map; // ← теперь используется
@@ -24,11 +23,11 @@ package com.mygdx.game.battle;
 //    public GridMap getMap() {
 //        return map;
 //    }
-//
-////    public void update(float deltaTime) {
-////        turnManager.update(deltaTime);
-////        actionManager.processQueuedActions();
-////        checkVictoryConditions();
-////    }
+
+//    public void update(float deltaTime) {
+//        turnManager.update(deltaTime);
+//        actionManager.processQueuedActions();
+//        checkVictoryConditions();
+//    }
 //}
 

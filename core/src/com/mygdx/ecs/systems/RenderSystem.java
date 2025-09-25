@@ -1,5 +1,9 @@
 package com.mygdx.ecs.systems;
 
+//import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+//import com.badlogic.gdx.scenes.scene2d.ui.List;
+//import com.mygdx.ecs.entities.Entity;
+//
 //public class RenderSystem extends GameSystem {
 //    private SpriteBatch batch;
 //

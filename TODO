@@ -1,2 +1,9 @@
 1. Сделать png для разных типов поверхности
 Убедись, что `AssetManager` загружает эти текстуры в `GameApplication.create()` или в `BattleSetupState`.
+
+2. Обновление `PositionComponent`
+   Ты уже используешь `gridX, gridY` — отлично! Убедись, что при создании юнита:
+
+   ```java
+   unit.addComponent(new PositionComponent(x, y)); // x, y — это grid координаты
+   ```

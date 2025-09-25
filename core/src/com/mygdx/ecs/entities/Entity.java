@@ -1,10 +1,10 @@
 package com.mygdx.ecs.entities;
 
-import com.badlogic.gdx.maps.Map;
-import com.mygdx.ecs.components.Component;
-
-import java.util.HashMap;
-
+//import com.badlogic.gdx.maps.Map;
+//import com.mygdx.ecs.components.Component;
+//
+//import java.util.HashMap;
+//
 //public class Entity {
 //    private static int nextId = 0;
 //    public final int id;

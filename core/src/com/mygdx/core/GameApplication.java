@@ -6,39 +6,23 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.game.battle.TileType;
 import com.mygdx.game.states.GameStateManager;
 import com.mygdx.game.states.MainMenuState;
-
-//public class GameApplication extends Game {
-//	public SpriteBatch batch;
-//	public Texture img;
-//	public BitmapFont font;
-//
-//	@Override
-//	public void create () {
-//		batch = new SpriteBatch();
-//		font = new BitmapFont(Gdx.files.internal("fontBArial24.fnt"));
-//		this.setScreen(new MainMenuState(this));
-//	}
-//
-//	@Override
-//	public void dispose () {
-//		batch.dispose();
-//		img.dispose();
-//	}
-//}
 
 public class GameApplication extends Game {
 	private SpriteBatch batch;
 	private GameStateManager stateManager;
-	private AssetManager assetManager;
+//	private AssetManager assetManager;
 
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
-		assetManager = new AssetManager();
+//		assetManager = new AssetManager();
 
 //		loadAssets();
+
+		TileType.loadTextures();
 		// Инициализация менеджера состояний
 		stateManager = new GameStateManager(this);
 		stateManager.pushState(new MainMenuState(stateManager));
@@ -65,16 +49,17 @@ public class GameApplication extends Game {
 	@Override
 	public void dispose() {
 		batch.dispose();
-		assetManager.dispose();
+//		assetManager.dispose();
 		stateManager.dispose();
+		TileType.disposeTextures();
 	}
 
 	public SpriteBatch getBatch() {
 		return batch;
 	}
 
-	public AssetManager getAssetManager() {
-		return assetManager;
-	}
+//	public AssetManager getAssetManager() {
+//		return assetManager;
+//	}
 }
 
