@@ -17,24 +17,13 @@ public class UnitDataManager {
 
     public void loadUnits(AssetManager assetManager) {
         FileHandle unitsDir = Gdx.files.internal("units/");
-        System.out.println("Файлы в units/: " + Arrays.toString(unitsDir.list()));
+
         Json json = new Json();
 
         for (FileHandle file : unitsDir.list()) {
-
             if (file.extension().equals("json")) {
-                System.out.println("Чтение файла: " + file.name());
-
                 UnitData data = json.fromJson(UnitData.class, file);
-
-                System.out.println("ID: " + data.id + ", Name: " + data.name);
-//                units.put(data.id, data);
-                if (data.id != null && !data.id.trim().isEmpty()) {
-                    units.put(data.id, data);
-                    System.out.println("Загружен юнит: " + data.id);
-                } else {
-                    System.out.println("Пропущен юнит без ID: " + file.name());
-                }
+                units.put(data.id, data);
 
                 // Загружаем текстуру
                 assetManager.load(data.texturePath, Texture.class);
@@ -43,7 +32,6 @@ public class UnitDataManager {
     }
 
     public UnitData getUnitData(String id) {
-        System.out.println("Поиск юнита: " + id + ", найдено: " + units.get(id));
         return units.get(id);
     }
 
@@ -51,3 +39,34 @@ public class UnitDataManager {
         return units.values();
     }
 }
+
+//public class UnitDataManager {
+//    private Map<String, UnitData> units = new HashMap<>();
+//
+//    public void loadUnits(AssetManager assetManager) {
+//        FileHandle unitsDir = Gdx.files.internal("units/");
+//
+//        Json json = new Json();
+//
+//        for (FileHandle file : unitsDir.list()) {
+//            if (file.extension().equals("json")) {
+//                UnitData data = json.fromJson(UnitData.class, file);
+//                if (data.id != null && !data.id.trim().isEmpty()) {
+//                    units.put(data.id, data);
+//                    // Загружаем текстуру
+//                    assetManager.load(data.texturePath, Texture.class);
+//                } else {
+//                    System.out.println("Пропущен юнит без ID: " + file.name());
+//                }
+//            }
+//        }
+//    }
+//
+//    public UnitData getUnitData(String id) {
+//        return units.get(id);
+//    }
+//
+//    public Collection<UnitData> getAllUnits() {
+//        return units.values();
+//    }
+//}

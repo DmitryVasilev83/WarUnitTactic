@@ -84,9 +84,9 @@ public class BattleState extends GameState {
         float tileSize = gridMap.getTileSize();
         // Игрок
         entityManager.addEntity(UnitFactory.createUnit("warrior", Team.PLAYER, 2, 2, tileSize, app));
-//        entityManager.addEntity(UnitFactory.createUnit("archer",  Team.PLAYER, 3, 2, tileSize, app));
+        entityManager.addEntity(UnitFactory.createUnit("archer",  Team.PLAYER, 3, 2, tileSize, app));
         // Враг
-//        entityManager.addEntity(UnitFactory.createUnit("mage",    Team.AI,     8, 7, tileSize, app));
+        entityManager.addEntity(UnitFactory.createUnit("mage",    Team.AI,     8, 7, tileSize, app));
     }
 
     @Override
