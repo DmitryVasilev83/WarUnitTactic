@@ -19,3 +19,4 @@ public class RenderComponent extends Component {
         this.zOrder = 10; // выше тайлов (тайлы z=0)
     }
 }
+

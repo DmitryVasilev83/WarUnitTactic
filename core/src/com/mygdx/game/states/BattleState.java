@@ -1,6 +1,7 @@
 package com.mygdx.game.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.core.GameApplication;
 import com.mygdx.ecs.entities.EntityManager;
 import com.mygdx.ecs.entities.UnitFactory;
 import com.mygdx.ecs.systems.RenderSystem;
@@ -29,13 +31,17 @@ public class BattleState extends GameState {
     private EntityManager entityManager;
     private RenderSystem renderSystem;
 
-
-//    private List<GameSystem> systems;
-//    private UIManager uiManager;
-
-
     public BattleState(final GameStateManager stateManager) {
         super(stateManager);
+
+        // Получаем AssetManager
+        AssetManager assetManager = ((GameApplication) Gdx.app.getApplicationListener()).getAssetManager();
+
+        // Проверяем, загружены ли ресурсы
+        if (!assetManager.isFinished()) {
+            System.out.println("Предупреждение: ресурсы ещё не загружены! Ждём завершения...");
+            assetManager.finishLoading(); // Ждём загрузки
+        }
 
         // Создаём всё заново (не полагаемся на super для камеры)
         camera = new OrthographicCamera();
@@ -44,7 +50,7 @@ public class BattleState extends GameState {
         viewport = new FitViewport(worldWidth, worldHeight, camera);
         stage = new Stage(viewport, batch);
 
-        gridMap = new GridMap(MAP_WIDTH, MAP_HEIGHT, TILE_SIZE);
+        gridMap = new GridMap(MAP_WIDTH, MAP_HEIGHT, TILE_SIZE, assetManager);
         camera.position.set(worldWidth / 2f, worldHeight / 2f, 0);
         camera.update();
 
@@ -53,7 +59,7 @@ public class BattleState extends GameState {
         renderSystem = new RenderSystem(entityManager, batch);
 
         // Создаём тестовых юнитов
-        spawnTestUnits();
+        spawnTestUnits(assetManager);
 
         // UI
         Table table = new Table();
@@ -67,19 +73,19 @@ public class BattleState extends GameState {
         menuButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                stateManager.popState(); // ← было pushState(new MainMenuState(...))
+                stateManager.popState();
             }
         });
     }
 
-    private void spawnTestUnits() {
+    private void spawnTestUnits(AssetManager assetManager) {
         float tileSize = gridMap.getTileSize();
         // Игрок
-        entityManager.addEntity(UnitFactory.createUnit(UnitType.WARRIOR, Team.PLAYER, 2, 2, tileSize));
-        entityManager.addEntity(UnitFactory.createUnit(UnitType.ARCHER,  Team.PLAYER, 3, 2, tileSize));
+        entityManager.addEntity(UnitFactory.createUnit(UnitType.WARRIOR, Team.PLAYER, 2, 2, tileSize, assetManager));
+        entityManager.addEntity(UnitFactory.createUnit(UnitType.ARCHER,  Team.PLAYER, 3, 2, tileSize, assetManager));
 
         // Враг
-        entityManager.addEntity(UnitFactory.createUnit(UnitType.MAGE,    Team.AI,     8, 7, tileSize));
+        entityManager.addEntity(UnitFactory.createUnit(UnitType.MAGE,    Team.AI,     8, 7, tileSize, assetManager));
     }
 
     @Override
@@ -105,19 +111,7 @@ public class BattleState extends GameState {
 
     @Override
     public void update(float deltaTime) {
-
         stage.act(deltaTime);
-
-//        @Override
-//        public void update(float deltaTime) {
-//            battleManager.update(deltaTime);
-//
-//            for (GameSystem system : systems) {
-//                system.update(deltaTime);
-//            }
-//
-//            uiManager.update(deltaTime);
-//        }
     }
 
     @Override
@@ -136,9 +130,8 @@ public class BattleState extends GameState {
     public GridMap getGridMap() {
         return gridMap;
     }
-
-
 }
+
 
 
 

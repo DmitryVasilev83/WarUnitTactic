@@ -1,6 +1,7 @@
 package com.mygdx.game.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.core.GameApplication;
 
 
 public class MainMenuState extends GameState {
@@ -42,8 +44,15 @@ public class MainMenuState extends GameState {
         startButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                GameState battleState = new BattleState(stateManager);
-                stateManager.pushState(battleState);
+                // Проверяем, загрузились ли ресурсы
+                AssetManager assetManager = ((GameApplication) Gdx.app.getApplicationListener()).getAssetManager();
+
+                if (assetManager.isFinished()) {
+                    GameState battleState = new BattleState(stateManager);
+                    stateManager.pushState(battleState);
+                } else {
+                    System.out.println("Ресурсы ещё не загружены!");
+                }
             }
         });
 
@@ -62,12 +71,12 @@ public class MainMenuState extends GameState {
         uiStage.act(deltaTime);
     }
 
-      @Override
+    @Override
     public void render(SpriteBatch batch) {
         Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-          uiStage.draw();
+        uiStage.draw();
     }
 
     @Override
