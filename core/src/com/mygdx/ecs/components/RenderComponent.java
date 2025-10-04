@@ -2,7 +2,6 @@ package com.mygdx.ecs.components;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.mygdx.game.states.BattleState;
 
 public class RenderComponent extends Component {
     public Texture texture;

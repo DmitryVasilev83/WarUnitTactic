@@ -1,8 +1,5 @@
 package com.mygdx.ecs.components;
 
-import com.mygdx.core.GameApplication;
-import com.mygdx.game.states.BattleState;
-
 public class PositionComponent extends Component {
     public int gridX, gridY;
     public float worldX, worldY;

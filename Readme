@@ -1,12 +1,15 @@
 GameApplication - основной класс приложения, управляет игровым циклом, инициализирует основные
 компоненты (SpriteBatch, AssetManager).
 
-1. Игра запускается → `LoadingState` → экран загрузки
+1. Игра запускается GameApplication → `LoadingState` → экран загрузки
 2. `AssetManager` загружает ресурсы → `LoadingState` отслеживает прогресс
 Если `AssetManager` ещё не загрузил ресурсы — `BattleState` ждёт (`finishLoading()`)
 Это гарантирует, что `assetManager.get()` не вызовет ошибку `Asset not loaded` (Без этого была такая ошибка)
 3. Когда всё загружено → `LoadingState` удаляется, `MainMenuState` загружается
-4. При нажатии "Старт" → `BattleState` создаётся, и всё работает корректно
+4. При нажатии "Старт" → `BattleState` создаётся
+Создаёт `GridMap`.
+Создаёт юнитов через `UnitFactory`.
+Рендерит с помощью `RenderSystem`.
 
 GameStateManager - управляет состояниями игры, содержит стек состояний и методы для их переключения (push/pop).
 

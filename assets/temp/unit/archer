@@ -1,0 +1,10 @@
+{
+  "id": "archer",
+  "name": "Лучник",
+  "baseHealth": 100,
+  "initiative": 3,
+  "movement": 5,
+  "actionPoints": 2,
+  "attackRange": 1,
+  "texturePath": "unitspng/archer.png"
+}

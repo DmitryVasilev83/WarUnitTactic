@@ -22,7 +22,7 @@ public class MySkin {
         pixmap.dispose();
 
         // Добавляем шрифт
-        BitmapFont font = new BitmapFont(Gdx.files.internal("fontBArial24.fnt"));
+        BitmapFont font = new BitmapFont(Gdx.files.internal("font\\fontBArial24.fnt"));
         font.getData().setScale(1f);
         skin.add("default-font", font);
 

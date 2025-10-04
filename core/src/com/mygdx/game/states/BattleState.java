@@ -30,11 +30,13 @@ public class BattleState extends GameState {
     private static final int MAP_HEIGHT = 10;
     private EntityManager entityManager;
     private RenderSystem renderSystem;
+    private GameApplication app;
 
     public BattleState(final GameStateManager stateManager) {
         super(stateManager);
+        // Получаем GameApplication
+        this.app = (GameApplication) Gdx.app.getApplicationListener();
 
-        // Получаем AssetManager
         AssetManager assetManager = ((GameApplication) Gdx.app.getApplicationListener()).getAssetManager();
 
         // Проверяем, загружены ли ресурсы
@@ -59,7 +61,7 @@ public class BattleState extends GameState {
         renderSystem = new RenderSystem(entityManager, batch);
 
         // Создаём тестовых юнитов
-        spawnTestUnits(assetManager);
+        spawnTestUnits(app);
 
         // UI
         Table table = new Table();
@@ -78,14 +80,13 @@ public class BattleState extends GameState {
         });
     }
 
-    private void spawnTestUnits(AssetManager assetManager) {
+    private void spawnTestUnits(GameApplication app) {
         float tileSize = gridMap.getTileSize();
         // Игрок
-        entityManager.addEntity(UnitFactory.createUnit(UnitType.WARRIOR, Team.PLAYER, 2, 2, tileSize, assetManager));
-        entityManager.addEntity(UnitFactory.createUnit(UnitType.ARCHER,  Team.PLAYER, 3, 2, tileSize, assetManager));
-
+        entityManager.addEntity(UnitFactory.createUnit("warrior", Team.PLAYER, 2, 2, tileSize, app));
+//        entityManager.addEntity(UnitFactory.createUnit("archer",  Team.PLAYER, 3, 2, tileSize, app));
         // Враг
-        entityManager.addEntity(UnitFactory.createUnit(UnitType.MAGE,    Team.AI,     8, 7, tileSize, assetManager));
+//        entityManager.addEntity(UnitFactory.createUnit("mage",    Team.AI,     8, 7, tileSize, app));
     }
 
     @Override

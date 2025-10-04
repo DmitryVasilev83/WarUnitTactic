@@ -1,6 +1,7 @@
 package com.mygdx.ecs.components;
 
 import com.mygdx.game.data.Team;
+import com.mygdx.game.data.UnitData;
 import com.mygdx.game.data.UnitType;
 
 public class UnitStatsComponent extends Component {
@@ -9,16 +10,16 @@ public class UnitStatsComponent extends Component {
     public int movementRange;
     public int initiative;
     public Team team;
-    public UnitType unitType;
+    public String unitId; // Вместо UnitType
 
-    public UnitStatsComponent(UnitType type, Team team) {
-        this.unitType = type;
+    public UnitStatsComponent(UnitData data, Team team) {
+        this.unitId = data.id;
         this.team = team;
-        this.maxHealth = type.baseHealth;
+        this.maxHealth = data.baseHealth;
         this.health = maxHealth;
-        this.maxActionPoints = type.actionPoints;
+        this.maxActionPoints = data.actionPoints;
         this.actionPoints = maxActionPoints;
-        this.movementRange = type.movement;
-        this.initiative = type.initiative;
+        this.movementRange = data.movement;
+        this.initiative = data.initiative;
     }
 }
