@@ -1,8 +1,7 @@
 package com.mygdx.ecs.components;
 
 import com.mygdx.game.data.AbilityType;
-import com.mygdx.game.data.UnitData;
-import com.mygdx.game.data.UnitType;
+import com.mygdx.game.data.units.UnitData;
 
 import java.util.Arrays;
 import java.util.List;

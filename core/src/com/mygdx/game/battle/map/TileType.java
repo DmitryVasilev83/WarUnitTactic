@@ -1,4 +1,4 @@
-package com.mygdx.game.battle;
+package com.mygdx.game.battle.map;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,8 +17,8 @@ public enum TileType {
 
     TileType(String texturePath, float movementCost, boolean isWalkable) {
         this.texturePath = texturePath;
-        this.movementCost = movementCost; // цена движения
-        this.isWalkable = isWalkable; // проходимость
+        this.movementCost = movementCost;
+        this.isWalkable = isWalkable;
     }
 
     public String getTexturePath() {
@@ -26,7 +26,9 @@ public enum TileType {
     }
 
     public void loadTexture(AssetManager assetManager) {
-        this.texture = assetManager.get(texturePath, Texture.class);
+        if (assetManager.isLoaded(texturePath)) {
+            this.texture = assetManager.get(texturePath, Texture.class);
+        }
     }
 
     public Texture getTexture() {

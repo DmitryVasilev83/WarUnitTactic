@@ -1,4 +1,4 @@
-package com.mygdx.game.data;
+package com.mygdx.game.data.units;
 
 public enum Team {
     PLAYER,

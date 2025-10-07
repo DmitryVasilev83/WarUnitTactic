@@ -13,55 +13,75 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.core.GameApplication;
+import com.mygdx.ecs.entities.Entity;
 import com.mygdx.ecs.entities.EntityManager;
 import com.mygdx.ecs.entities.UnitFactory;
 import com.mygdx.ecs.systems.RenderSystem;
-import com.mygdx.game.battle.GridMap;
-import com.mygdx.game.data.Team;
-import com.mygdx.game.data.UnitType;
+import com.mygdx.game.battle.map.GridMap;
+import com.mygdx.game.data.MapLoader;
+import com.mygdx.game.data.units.Team;
+import com.mygdx.game.data.units.UnitData;
 
 public class BattleState extends GameState {
     private GridMap gridMap;
     private OrthographicCamera camera;
     private Viewport viewport;
     private Stage stage;
-    private static final float TILE_SIZE = 40f;
-    private static final int MAP_WIDTH = 12;
-    private static final int MAP_HEIGHT = 10;
     private EntityManager entityManager;
     private RenderSystem renderSystem;
     private GameApplication app;
+    private float tileSize; // Храним размер тайла из карты
 
     public BattleState(final GameStateManager stateManager) {
         super(stateManager);
-        // Получаем GameApplication
         this.app = (GameApplication) Gdx.app.getApplicationListener();
 
-        AssetManager assetManager = ((GameApplication) Gdx.app.getApplicationListener()).getAssetManager();
+        AssetManager assetManager = app.getAssetManager();
 
-        // Проверяем, загружены ли ресурсы
         if (!assetManager.isFinished()) {
-            System.out.println("Предупреждение: ресурсы ещё не загружены! Ждём завершения...");
-            assetManager.finishLoading(); // Ждём загрузки
+            assetManager.finishLoading();
         }
 
-        // Создаём всё заново (не полагаемся на super для камеры)
-        camera = new OrthographicCamera();
-        float worldWidth = MAP_WIDTH * TILE_SIZE;
-        float worldHeight = MAP_HEIGHT * TILE_SIZE;
-        viewport = new FitViewport(worldWidth, worldHeight, camera);
-        stage = new Stage(viewport, batch);
+        // Загружаем карту
+        MapLoader.MapData mapData = MapLoader.loadMap("maps/test.tmx", assetManager);
+        gridMap = mapData.gridMap;
+        this.tileSize = mapData.tileWidth; // Используем размер тайла из карты
 
-        gridMap = new GridMap(MAP_WIDTH, MAP_HEIGHT, TILE_SIZE, assetManager);
+        System.out.println("=== MAP LOADING DEBUG ===");
+        System.out.println("Units loaded from map: " + mapData.units.length);
+        System.out.println("Tile size from map: " + tileSize);
+
+        int width = gridMap.getWidth();
+        int height = gridMap.getHeight();
+        float worldWidth = width * tileSize;
+        float worldHeight = height * tileSize;
+
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(worldWidth, worldHeight, camera);
+        stage = new Stage(viewport, app.getBatch()); // Используем batch из приложения
+
         camera.position.set(worldWidth / 2f, worldHeight / 2f, 0);
         camera.update();
 
         // === ИНИЦИАЛИЗАЦИЯ ECS ===
         entityManager = new EntityManager();
-        renderSystem = new RenderSystem(entityManager, batch);
+        renderSystem = new RenderSystem(entityManager, app.getBatch()); // Используем batch из приложения
 
-        // Создаём тестовых юнитов
-        spawnTestUnits(app);
+        // Создаём юнитов из карты
+        System.out.println("Creating units...");
+        for (UnitData unitData : mapData.units) {
+            // Преобразуем тайловые координаты в мировые
+            float worldX = unitData.startX * tileSize;
+            float worldY = unitData.startY * tileSize;
+
+            System.out.println("Creating unit: " + unitData.id + " at world coords (" + worldX + ", " + worldY + ")");
+            Entity unitEntity = UnitFactory.createUnit(unitData.id, unitData.team, worldX, worldY, tileSize, app);
+            if (unitEntity != null) {
+                entityManager.addEntity(unitEntity);
+            }
+        }
+
+        System.out.println("Entities in EntityManager: " + entityManager.getEntities().size());
 
         // UI
         Table table = new Table();
@@ -80,20 +100,6 @@ public class BattleState extends GameState {
         });
     }
 
-    private void spawnTestUnits(GameApplication app) {
-        float tileSize = gridMap.getTileSize();
-        // Игрок
-        entityManager.addEntity(UnitFactory.createUnit("warrior", Team.PLAYER, 2, 2, tileSize, app));
-        entityManager.addEntity(UnitFactory.createUnit("archer",  Team.PLAYER, 3, 2, tileSize, app));
-        // Враг
-        entityManager.addEntity(UnitFactory.createUnit("mage",    Team.AI,     8, 7, tileSize, app));
-    }
-
-    @Override
-    public void enter() {
-        Gdx.input.setInputProcessor(stage);
-    }
-
     @Override
     public void render(SpriteBatch batch) {
         Gdx.gl.glClearColor(0.2f, 0.3f, 0.2f, 1f);
@@ -102,10 +108,10 @@ public class BattleState extends GameState {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
-        batch.begin();
+        batch.begin(); // Начинаем batch перед рисованием
         gridMap.render(batch);
         renderSystem.render();
-        batch.end();
+        batch.end(); // Заканчиваем batch
 
         stage.draw();
     }
@@ -113,6 +119,11 @@ public class BattleState extends GameState {
     @Override
     public void update(float deltaTime) {
         stage.act(deltaTime);
+    }
+
+    @Override
+    public void enter() {
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
@@ -126,12 +137,22 @@ public class BattleState extends GameState {
     @Override
     public void dispose() {
         stage.dispose();
+        // Не dispose batch, так как он управляется приложением
     }
 
     public GridMap getGridMap() {
         return gridMap;
     }
+
+    public float getTileSize() {
+        return tileSize;
+    }
+
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
 }
+
 
 
 

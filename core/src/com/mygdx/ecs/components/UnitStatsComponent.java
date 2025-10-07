@@ -1,8 +1,7 @@
 package com.mygdx.ecs.components;
 
-import com.mygdx.game.data.Team;
-import com.mygdx.game.data.UnitData;
-import com.mygdx.game.data.UnitType;
+import com.mygdx.game.data.units.Team;
+import com.mygdx.game.data.units.UnitData;
 
 public class UnitStatsComponent extends Component {
     public int health, maxHealth;

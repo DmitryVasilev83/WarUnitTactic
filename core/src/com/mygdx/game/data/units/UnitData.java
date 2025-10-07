@@ -1,4 +1,4 @@
-package com.mygdx.game.data;
+package com.mygdx.game.data.units;
 
 public class UnitData {
     public String id;
@@ -9,6 +9,8 @@ public class UnitData {
     public int actionPoints;
     public int attackRange;
     public String texturePath;
+    public int startX, startY;
+    public Team team;
 
     public UnitData() {}
 
@@ -16,3 +18,6 @@ public class UnitData {
     public String getName() { return name; }
     public String getTexturePath() { return texturePath; }
 }
+
+
+

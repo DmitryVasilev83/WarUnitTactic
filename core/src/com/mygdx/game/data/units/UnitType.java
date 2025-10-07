@@ -1,4 +1,6 @@
-package com.mygdx.game.data;
+package com.mygdx.game.data.units;
+
+import com.mygdx.game.data.AssetConfig;
 
 public enum UnitType {
     WARRIOR(100, 3, 5, 2, 1, AssetConfig.UNIT_WARRIOR),

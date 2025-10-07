@@ -4,7 +4,7 @@ package com.mygdx.ecs.systems;
 //import com.badlogic.gdx.scenes.scene2d.ui.List;
 //import com.mygdx.ecs.components.PositionComponent;
 //import com.mygdx.ecs.entities.Entity;
-//import com.mygdx.game.battle.GridMap;
+//import com.mygdx.game.battle.map.GridMap;
 
 //import java.util.ArrayList;
 //
