@@ -1,5 +1,8 @@
 package com.mygdx.game.data.units;
 
+
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+
 public class UnitData {
     public String id;
     public String name;
@@ -9,15 +12,22 @@ public class UnitData {
     public int actionPoints;
     public int attackRange;
     public String texturePath;
-    public int startX, startY;
+    public TiledMapTile tiledMapTile; // Тайл из Tiled
+    public int tileGid = -1; // Новое поле для хранения GID
+    public int startX;
+    public int startY;
     public Team team;
 
-    public UnitData() {}
+    public boolean hasTiledMapTile() {
+        return tiledMapTile != null || tileGid > 0;
+    }
 
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public String getTexturePath() { return texturePath; }
+    public String getTexturePath() {
+        return texturePath;
+    }
 }
+
+
 
 
 

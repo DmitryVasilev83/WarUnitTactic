@@ -5,6 +5,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -24,13 +25,14 @@ import com.mygdx.game.data.units.UnitData;
 
 public class BattleState extends GameState {
     private GridMap gridMap;
+    private TiledMap tiledMap; // Новое поле
     private OrthographicCamera camera;
     private Viewport viewport;
     private Stage stage;
     private EntityManager entityManager;
     private RenderSystem renderSystem;
     private GameApplication app;
-    private float tileSize; // Храним размер тайла из карты
+    private float tileSize;
 
     public BattleState(final GameStateManager stateManager) {
         super(stateManager);
@@ -45,11 +47,8 @@ public class BattleState extends GameState {
         // Загружаем карту
         MapLoader.MapData mapData = MapLoader.loadMap("maps/test.tmx", assetManager);
         gridMap = mapData.gridMap;
-        this.tileSize = mapData.tileWidth; // Используем размер тайла из карты
-
-        System.out.println("=== MAP LOADING DEBUG ===");
-        System.out.println("Units loaded from map: " + mapData.units.length);
-        System.out.println("Tile size from map: " + tileSize);
+        this.tiledMap = mapData.tiledMap; // Сохраняем ссылку
+        this.tileSize = mapData.tileWidth;
 
         int width = gridMap.getWidth();
         int height = gridMap.getHeight();
@@ -58,14 +57,14 @@ public class BattleState extends GameState {
 
         camera = new OrthographicCamera();
         viewport = new FitViewport(worldWidth, worldHeight, camera);
-        stage = new Stage(viewport, app.getBatch()); // Используем batch из приложения
+        stage = new Stage(viewport, app.getBatch());
 
         camera.position.set(worldWidth / 2f, worldHeight / 2f, 0);
         camera.update();
 
         // === ИНИЦИАЛИЗАЦИЯ ECS ===
         entityManager = new EntityManager();
-        renderSystem = new RenderSystem(entityManager, app.getBatch()); // Используем batch из приложения
+        renderSystem = new RenderSystem(entityManager, app.getBatch());
 
         // Создаём юнитов из карты
         System.out.println("Creating units...");
@@ -75,13 +74,12 @@ public class BattleState extends GameState {
             float worldY = unitData.startY * tileSize;
 
             System.out.println("Creating unit: " + unitData.id + " at world coords (" + worldX + ", " + worldY + ")");
-            Entity unitEntity = UnitFactory.createUnit(unitData.id, unitData.team, worldX, worldY, tileSize, app);
+            // Передаем tiledMap в UnitFactory
+            Entity unitEntity = UnitFactory.createUnit(unitData.id, unitData.team, worldX, worldY, tileSize, app, tiledMap);
             if (unitEntity != null) {
                 entityManager.addEntity(unitEntity);
             }
         }
-
-        System.out.println("Entities in EntityManager: " + entityManager.getEntities().size());
 
         // UI
         Table table = new Table();
@@ -150,6 +148,10 @@ public class BattleState extends GameState {
 
     public OrthographicCamera getCamera() {
         return camera;
+    }
+
+    public TiledMap getTiledMap() {
+        return tiledMap;
     }
 }
 

@@ -6,10 +6,7 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.game.battle.map.GridMap;
 import com.mygdx.game.battle.map.Tile;
@@ -24,14 +21,16 @@ public class MapLoader {
     public static class MapData {
         public GridMap gridMap;
         public UnitData[] units;
-        public float tileWidth;   // Добавляем размеры тайла
+        public float tileWidth;
         public float tileHeight;
+        public TiledMap tiledMap;
 
-        public MapData(GridMap gridMap, UnitData[] units, float tileWidth, float tileHeight) {
+        public MapData(GridMap gridMap, UnitData[] units, float tileWidth, float tileHeight, TiledMap tiledMap) {
             this.gridMap = gridMap;
             this.units = units;
             this.tileWidth = tileWidth;
             this.tileHeight = tileHeight;
+            this.tiledMap = tiledMap; // Сохраняем ссылку на TiledMap
         }
     }
 
@@ -39,19 +38,15 @@ public class MapLoader {
         TmxMapLoader mapLoader = new TmxMapLoader();
         TiledMap tiledMap = mapLoader.load(mapPath);
 
-        // Получаем реальный размер тайла из карты
         int mapTileWidth = (int) tiledMap.getProperties().get("tilewidth", Integer.class);
         int mapTileHeight = (int) tiledMap.getProperties().get("tileheight", Integer.class);
 
         System.out.println("Map tile size: " + mapTileWidth + "x" + mapTileHeight);
 
-        // Загрузка тайлов
         GridMap gridMap = loadGridMap(tiledMap, assetManager);
-
-        // Загрузка юнитов
         UnitData[] units = loadUnits(tiledMap, mapTileWidth, mapTileHeight);
 
-        return new MapData(gridMap, units, mapTileWidth, mapTileHeight);
+        return new MapData(gridMap, units, mapTileWidth, mapTileHeight, tiledMap); // Передаем tiledMap
     }
 
     private static GridMap loadGridMap(TiledMap tiledMap, AssetManager assetManager) {
@@ -59,9 +54,6 @@ public class MapLoader {
         int height = (int) tiledMap.getProperties().get("height", Integer.class);
         int tileWidth = (int) tiledMap.getProperties().get("tilewidth", Integer.class);
         int tileHeight = (int) tiledMap.getProperties().get("tileheight", Integer.class);
-
-        System.out.println("=== LOADING GRID MAP ===");
-        System.out.println("Map size: " + width + "x" + height + ", Tile size: " + tileWidth + "x" + tileHeight);
 
         Tile[][] tiles = new Tile[width][height];
 
@@ -107,9 +99,6 @@ public class MapLoader {
     }
 
     private static UnitData[] loadUnits(TiledMap tiledMap, int tileWidth, int tileHeight) {
-        System.out.println("=== LOADING UNITS ===");
-        System.out.println("Using tile size: " + tileWidth + "x" + tileHeight);
-
         MapLayer objectLayer = tiledMap.getLayers().get("units");
         if (objectLayer == null) {
             System.out.println("Layer 'units' not found!");
@@ -126,29 +115,39 @@ public class MapLoader {
             String teamStr = (String) props.get("team");
 
             if (unitTypeStr != null && teamStr != null) {
-                // Получаем координаты правильно
                 float x = 0f, y = 0f;
 
-                Object xObj = props.get("x");
-                Object yObj = props.get("y");
-
-                if (xObj instanceof Number) {
-                    x = ((Number) xObj).floatValue();
+                if (obj instanceof RectangleMapObject) {
+                    RectangleMapObject rectObj = (RectangleMapObject) obj;
+                    x = rectObj.getRectangle().x;
+                    y = rectObj.getRectangle().y;
+                } else {
+                    Object xObj = props.get("x");
+                    Object yObj = props.get("y");
+                    if (xObj instanceof Number) x = ((Number) xObj).floatValue();
+                    if (yObj instanceof Number) y = ((Number) yObj).floatValue();
                 }
-                if (yObj instanceof Number) {
-                    y = ((Number) yObj).floatValue();
-                }
 
-                // Конвертируем пиксельные координаты в тайловые
                 int tileX = (int) (x / tileWidth);
                 int tileY = (int) (y / tileHeight);
 
                 System.out.println("Unit: " + unitTypeStr + " at pixel (" + x + ", " + y + ") -> tile (" + tileX + ", " + tileY + ")");
 
+                // Создаем UnitData с GID вместо получения из UnitDataManager
                 UnitData unitData = new UnitData();
                 unitData.id = unitTypeStr;
                 unitData.startX = tileX;
                 unitData.startY = tileY;
+
+                // Получаем GID тайла
+                Object gidObj = props.get("gid");
+                if (gidObj != null && gidObj instanceof Number) {
+                    int gid = ((Number) gidObj).intValue();
+                    if (gid > 0) {
+                        unitData.tileGid = gid & ~(0x80000000 | 0x40000000 | 0x20000000); // Очищаем флаги
+                        System.out.println("Unit " + unitTypeStr + " has GID: " + unitData.tileGid);
+                    }
+                }
 
                 try {
                     unitData.team = Team.valueOf(teamStr.toUpperCase());
@@ -162,4 +161,6 @@ public class MapLoader {
         System.out.println("Total units loaded: " + units.size());
         return units.toArray(new UnitData[0]);
     }
+
+
 }

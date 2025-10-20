@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="8">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="12">
  <tileset firstgid="1" source="terrain.tsx"/>
  <tileset firstgid="101" source="units.tsx"/>
  <layer id="1" name="relief" width="30" height="20">
@@ -33,7 +33,7 @@
     <property name="unitType" value="warrior"/>
    </properties>
   </object>
-  <object id="2" gid="126" x="455.971" y="135.461" width="32" height="32">
+  <object id="11" gid="101" x="610" y="192" width="32" height="32">
    <properties>
     <property name="team" value="ai"/>
     <property name="unitType" value="mage"/>

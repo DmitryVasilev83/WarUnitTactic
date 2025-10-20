@@ -22,7 +22,7 @@ public class RenderSystem {
                 PositionComponent.class, RenderComponent.class
         );
 
-        // Сортировка по zOrder (опционально, но полезно)
+        // Сортировка по zOrder
         renderable.sort((a, b) -> {
             int z1 = a.getComponent(RenderComponent.class).zOrder;
             int z2 = b.getComponent(RenderComponent.class).zOrder;
@@ -33,8 +33,8 @@ public class RenderSystem {
             PositionComponent pos = entity.getComponent(PositionComponent.class);
             RenderComponent render = entity.getComponent(RenderComponent.class);
 
-            // Предполагаем, что worldX/worldY уже в мировых координатах
-            batch.draw(render.texture, pos.worldX, pos.worldY, render.width, render.height);
+            // Используем новый метод отрисовки
+            render.render(batch, pos.worldX, pos.worldY);
         }
     }
 }

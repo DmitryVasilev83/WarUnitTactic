@@ -14,6 +14,7 @@ public class GridMap {
     private final Tile[][] tiles;
     private final float tileSize;
     private AssetManager assetManager;
+    private TiledMap tiledMap; // Новое поле
 
     public GridMap(int width, int height, Tile[][] tiles, AssetManager assetManager, float tileSize) {
         this.width = width;
@@ -26,6 +27,16 @@ public class GridMap {
         for (TileType type : TileType.values()) {
             type.loadTexture(assetManager);
         }
+    }
+
+    // Новый метод для установки TiledMap
+    public void setTiledMap(TiledMap tiledMap) {
+        this.tiledMap = tiledMap;
+    }
+
+    // Новый метод для получения TiledMap
+    public TiledMap getTiledMap() {
+        return tiledMap;
     }
 
     public Tile getTile(int x, int y) {
