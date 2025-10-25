@@ -16,7 +16,7 @@ import com.mygdx.core.GameApplication;
 public class MainMenuState extends GameState {
     private Table table;
     private Stage uiStage;
-    private TextButton startButton, settingsButton;
+    private TextButton startButton, settingsButton, exitButton;
 
     public MainMenuState(GameStateManager stateManager) {
         super(stateManager);
@@ -31,8 +31,6 @@ public class MainMenuState extends GameState {
 
     private void createUI() {
         TextButton settingsButton = new TextButton("Настройки битвы", skin);
-        TextButton startButton = new TextButton("Старт", skin);
-
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -41,6 +39,7 @@ public class MainMenuState extends GameState {
             }
         });
 
+        TextButton startButton = new TextButton("Старт", skin);
         startButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -56,9 +55,19 @@ public class MainMenuState extends GameState {
             }
         });
 
+        exitButton = new TextButton("Выход", skin);
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.exit();
+            }
+        });
+
         table.add(settingsButton).padBottom(20).width(200).height(60);
         table.row();
         table.add(startButton).width(200).height(60);
+        table.row();
+        table.add(exitButton).padTop(20).width(200).height(60);
     }
 
     @Override
