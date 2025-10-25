@@ -18,6 +18,7 @@ import com.mygdx.ecs.entities.Entity;
 import com.mygdx.ecs.entities.EntityManager;
 import com.mygdx.ecs.entities.UnitFactory;
 import com.mygdx.ecs.systems.RenderSystem;
+import com.mygdx.game.battle.UnitSpawner;
 import com.mygdx.game.battle.map.GridMap;
 import com.mygdx.game.data.MapLoader;
 import com.mygdx.game.data.units.Team;
@@ -33,6 +34,7 @@ public class BattleState extends GameState {
     private RenderSystem renderSystem;
     private GameApplication app;
     private float tileSize;
+    private UnitSpawner unitSpawner;
 
     public BattleState(final GameStateManager stateManager) {
         super(stateManager);
@@ -76,6 +78,11 @@ public class BattleState extends GameState {
                 entityManager.addEntity(unitEntity);
             }
         }
+
+        // Создаем юнитов вручную
+        UnitSpawner unitSpawner = new UnitSpawner(entityManager, tileSize);
+        Entity warrior2 = unitSpawner.spawnUnit("warrior", Team.PLAYER, 14, 10, "unitspng/warrior.png");
+        Entity mage2 = unitSpawner.spawnUnit("mage", Team.PLAYER, 14, 9, "unitspng/mage.png");
 
         // UI без изменений
         Table table = new Table();
