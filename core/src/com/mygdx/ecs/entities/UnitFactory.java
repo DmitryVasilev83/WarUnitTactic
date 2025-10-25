@@ -20,8 +20,8 @@ import com.mygdx.game.states.GameState;
 
 public class UnitFactory {
 
-    public static Entity createUnit(String unitId, Team team, float worldX, float worldY, float tileSize, GameApplication app, TiledMap tiledMap) {
-        // Получаем базовые данные из UnitDataManager
+    public static Entity createUnit(String unitId, Team team, float worldX, float worldY,
+                                    float tileSize, GameApplication app, TiledMap tiledMap) {
         UnitData baseData = app.getUnitDataManager().getUnitData(unitId);
         if (baseData == null) {
             throw new IllegalArgumentException("Unknown unit ID: " + unitId);
@@ -30,14 +30,12 @@ public class UnitFactory {
         AssetManager assetManager = app.getAssetManager();
         Entity unit = new Entity();
 
-        // Позиция
         unit.addComponent(new PositionComponent(worldX, worldY));
 
-        // Рендер - с поддержкой тайлов из Tiled
+        // Рендер компонент создается на основе данных из baseData
         RenderComponent renderComponent = createRenderComponent(baseData, assetManager, tileSize, tiledMap);
         unit.addComponent(renderComponent);
 
-        // Остальные компоненты (передаем baseData, так как у нас есть все нужные данные)
         unit.addComponent(new UnitStatsComponent(baseData, team));
         unit.addComponent(new SelectableComponent());
         unit.addComponent(new MovementComponent());
@@ -50,29 +48,95 @@ public class UnitFactory {
         return unit;
     }
 
-    private static RenderComponent createRenderComponent(UnitData data, AssetManager assetManager, float tileSize, TiledMap tiledMap) {
-        System.out.println("Creating render component for unit: " + data.id + ", hasGID: " + (data.tileGid > 0));
+    // Перегруженный метод для создания юнита с UnitData (из карты)
+    public static Entity createUnitFromData(UnitData unitData, float tileSize,
+                                            GameApplication app, TiledMap tiledMap) {
+        float worldX = unitData.startX * tileSize;
+        float worldY = unitData.startY * tileSize;
 
-        // Если есть GID из Tiled, восстанавливаем тайл
+        AssetManager assetManager = app.getAssetManager();
+        Entity unit = new Entity();
+
+        unit.addComponent(new PositionComponent(worldX, worldY));
+
+        // Используем unitData напрямую (там уже есть GID или manualTexturePath)
+        RenderComponent renderComponent = createRenderComponent(unitData, assetManager, tileSize, tiledMap);
+        unit.addComponent(renderComponent);
+
+        unit.addComponent(new UnitStatsComponent(unitData, unitData.team));
+        unit.addComponent(new SelectableComponent());
+        unit.addComponent(new MovementComponent());
+        unit.addComponent(new CombatComponent(unitData));
+
+        if (unitData.team == Team.AI) {
+            unit.addComponent(new AIComponent());
+        }
+
+        return unit;
+    }
+
+    // Метод для создания юнита вручную с указанием текстуры
+    public static Entity createUnitManual(String unitId, Team team, float worldX, float worldY,
+                                          String texturePath, float tileSize, GameApplication app) {
+        UnitData baseData = app.getUnitDataManager().getUnitData(unitId);
+        if (baseData == null) {
+            throw new IllegalArgumentException("Unknown unit ID: " + unitId);
+        }
+
+        // Создаем копию и устанавливаем путь к текстуре
+        UnitData unitData = baseData.copy();
+        unitData.manualTexturePath = texturePath;
+        unitData.team = team;
+        unitData.tileGid = -1; // Явно указываем, что GID не используется
+
+        AssetManager assetManager = app.getAssetManager();
+        Entity unit = new Entity();
+
+        unit.addComponent(new PositionComponent(worldX, worldY));
+
+        RenderComponent renderComponent = createRenderComponent(unitData, assetManager, tileSize, null);
+        unit.addComponent(renderComponent);
+
+        unit.addComponent(new UnitStatsComponent(unitData, team));
+        unit.addComponent(new SelectableComponent());
+        unit.addComponent(new MovementComponent());
+        unit.addComponent(new CombatComponent(unitData));
+
+        if (team == Team.AI) {
+            unit.addComponent(new AIComponent());
+        }
+
+        return unit;
+    }
+
+    private static RenderComponent createRenderComponent(UnitData data, AssetManager assetManager,
+                                                         float tileSize, TiledMap tiledMap) {
+        System.out.println("Creating render component for unit: " + data.id);
+
+        // Приоритет 1: GID из Tiled
         if (data.tileGid > 0 && tiledMap != null) {
             TiledMapTile tiledMapTile = getTileByGid(tiledMap, data.tileGid);
             if (tiledMapTile != null) {
-                System.out.println("Using tile from Tiled map for unit: " + data.id + " with GID: " + data.tileGid);
+                System.out.println("✓ Using tile from Tiled map for unit: " + data.id + " with GID: " + data.tileGid);
                 return new RenderComponent(tiledMapTile, tileSize);
             } else {
-                System.out.println("Failed to find tile for GID: " + data.tileGid);
+                System.out.println("✗ Failed to find tile for GID: " + data.tileGid);
             }
         }
 
-        // Фолбэк на обычную текстуру из JSON
-        System.out.println("Using texture from JSON for unit: " + data.id + ": " + data.getTexturePath());
-        if (data.getTexturePath() != null && assetManager.isLoaded(data.getTexturePath())) {
-            Texture texture = assetManager.get(data.getTexturePath(), Texture.class);
-            return new RenderComponent(texture, tileSize);
+        // Приоритет 2: Ручной путь к текстуре
+        if (data.manualTexturePath != null && !data.manualTexturePath.isEmpty()) {
+            if (assetManager.isLoaded(data.manualTexturePath)) {
+                Texture texture = assetManager.get(data.manualTexturePath, Texture.class);
+                System.out.println("✓ Using manual texture for unit: " + data.id + ": " + data.manualTexturePath);
+                return new RenderComponent(texture, tileSize);
+            } else {
+                System.out.println("✗ Manual texture not loaded: " + data.manualTexturePath);
+            }
         }
 
-        // Если ничего не удалось загрузить, создаем дефолтную текстуру
-        System.out.println("Using default texture for unit: " + data.id);
+        // Приоритет 3: Дефолтная текстура
+        System.out.println("⚠ Using default texture for unit: " + data.id);
         return new RenderComponent(createDefaultTexture(), tileSize);
     }
 
@@ -100,4 +164,3 @@ public class UnitFactory {
         return texture;
     }
 }
-

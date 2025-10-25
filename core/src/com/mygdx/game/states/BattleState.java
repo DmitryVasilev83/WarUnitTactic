@@ -44,10 +44,9 @@ public class BattleState extends GameState {
             assetManager.finishLoading();
         }
 
-        // Загружаем карту
         MapLoader.MapData mapData = MapLoader.loadMap("maps/test.tmx", assetManager);
         gridMap = mapData.gridMap;
-        this.tiledMap = mapData.tiledMap; // Сохраняем ссылку
+        this.tiledMap = mapData.tiledMap;
         this.tileSize = mapData.tileWidth;
 
         int width = gridMap.getWidth();
@@ -62,26 +61,23 @@ public class BattleState extends GameState {
         camera.position.set(worldWidth / 2f, worldHeight / 2f, 0);
         camera.update();
 
-        // === ИНИЦИАЛИЗАЦИЯ ECS ===
         entityManager = new EntityManager();
         renderSystem = new RenderSystem(entityManager, app.getBatch());
 
-        // Создаём юнитов из карты
-        System.out.println("Creating units...");
+        // Создаём юнитов из карты используя новый метод
+        System.out.println("Creating units from map...");
         for (UnitData unitData : mapData.units) {
-            // Преобразуем тайловые координаты в мировые
-            float worldX = unitData.startX * tileSize;
-            float worldY = unitData.startY * tileSize;
+            System.out.println("Creating unit: " + unitData.id + " at tile (" +
+                    unitData.startX + ", " + unitData.startY + ")");
 
-            System.out.println("Creating unit: " + unitData.id + " at world coords (" + worldX + ", " + worldY + ")");
-            // Передаем tiledMap в UnitFactory
-            Entity unitEntity = UnitFactory.createUnit(unitData.id, unitData.team, worldX, worldY, tileSize, app, tiledMap);
+            // Используем метод createUnitFromData вместо createUnit
+            Entity unitEntity = UnitFactory.createUnitFromData(unitData, tileSize, app, tiledMap);
             if (unitEntity != null) {
                 entityManager.addEntity(unitEntity);
             }
         }
 
-        // UI
+        // UI без изменений
         Table table = new Table();
         table.setFillParent(true);
         table.bottom().right().pad(20);
@@ -154,7 +150,6 @@ public class BattleState extends GameState {
         return tiledMap;
     }
 }
-
 
 
 

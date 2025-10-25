@@ -1,5 +1,6 @@
 package com.mygdx.game.data;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
@@ -8,6 +9,8 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.math.Rectangle;
+import com.mygdx.core.GameApplication;
+import com.mygdx.ecs.entities.UnitDataManager;
 import com.mygdx.game.battle.map.GridMap;
 import com.mygdx.game.battle.map.Tile;
 import com.mygdx.game.battle.map.TileType;
@@ -107,6 +110,10 @@ public class MapLoader {
 
         java.util.ArrayList<UnitData> units = new java.util.ArrayList<>();
 
+        // Получаем доступ к UnitDataManager
+        GameApplication app = (GameApplication) Gdx.app.getApplicationListener();
+        UnitDataManager dataManager = app.getUnitDataManager();
+
         for (int i = 0; i < objectLayer.getObjects().getCount(); i++) {
             MapObject obj = objectLayer.getObjects().get(i);
             MapProperties props = obj.getProperties();
@@ -115,8 +122,17 @@ public class MapLoader {
             String teamStr = (String) props.get("team");
 
             if (unitTypeStr != null && teamStr != null) {
-                float x = 0f, y = 0f;
+                // Получаем базовые данные из JSON
+                UnitData baseData = dataManager.getUnitData(unitTypeStr);
+                if (baseData == null) {
+                    System.err.println("Unknown unit type: " + unitTypeStr);
+                    continue;
+                }
 
+                // Создаем копию с дополнительными данными из Tiled
+                UnitData unitData = baseData.copy();
+
+                float x = 0f, y = 0f;
                 if (obj instanceof RectangleMapObject) {
                     RectangleMapObject rectObj = (RectangleMapObject) obj;
                     x = rectObj.getRectangle().x;
@@ -128,23 +144,15 @@ public class MapLoader {
                     if (yObj instanceof Number) y = ((Number) yObj).floatValue();
                 }
 
-                int tileX = (int) (x / tileWidth);
-                int tileY = (int) (y / tileHeight);
+                unitData.startX = (int) (x / tileWidth);
+                unitData.startY = (int) (y / tileHeight);
 
-                System.out.println("Unit: " + unitTypeStr + " at pixel (" + x + ", " + y + ") -> tile (" + tileX + ", " + tileY + ")");
-
-                // Создаем UnitData с GID вместо получения из UnitDataManager
-                UnitData unitData = new UnitData();
-                unitData.id = unitTypeStr;
-                unitData.startX = tileX;
-                unitData.startY = tileY;
-
-                // Получаем GID тайла
+                // Получаем GID тайла из Tiled
                 Object gidObj = props.get("gid");
                 if (gidObj != null && gidObj instanceof Number) {
                     int gid = ((Number) gidObj).intValue();
                     if (gid > 0) {
-                        unitData.tileGid = gid & ~(0x80000000 | 0x40000000 | 0x20000000); // Очищаем флаги
+                        unitData.tileGid = gid & ~(0x80000000 | 0x40000000 | 0x20000000);
                         System.out.println("Unit " + unitTypeStr + " has GID: " + unitData.tileGid);
                     }
                 }
@@ -161,6 +169,5 @@ public class MapLoader {
         System.out.println("Total units loaded: " + units.size());
         return units.toArray(new UnitData[0]);
     }
-
 
 }

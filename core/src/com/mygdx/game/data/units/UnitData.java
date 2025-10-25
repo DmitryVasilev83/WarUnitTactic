@@ -11,22 +11,29 @@ public class UnitData {
     public int movement;
     public int actionPoints;
     public int attackRange;
-    public String texturePath;
-    public TiledMapTile tiledMapTile; // Тайл из Tiled
-    public int tileGid = -1; // Новое поле для хранения GID
+
+    // Данные для размещения на карте
     public int startX;
     public int startY;
     public Team team;
 
-    public boolean hasTiledMapTile() {
-        return tiledMapTile != null || tileGid > 0;
-    }
+    // Данные о текстуре (взаимоисключающие)
+    public int tileGid = -1;           // GID из Tiled (приоритет)
+    public String manualTexturePath;    // Путь для ручного добавления
 
-    public String getTexturePath() {
-        return texturePath;
+    // Метод для клонирования базовых данных
+    public UnitData copy() {
+        UnitData copy = new UnitData();
+        copy.id = this.id;
+        copy.name = this.name;
+        copy.baseHealth = this.baseHealth;
+        copy.initiative = this.initiative;
+        copy.movement = this.movement;
+        copy.actionPoints = this.actionPoints;
+        copy.attackRange = this.attackRange;
+        return copy;
     }
 }
-
 
 
 
