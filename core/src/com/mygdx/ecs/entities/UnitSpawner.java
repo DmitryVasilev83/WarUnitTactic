@@ -1,4 +1,4 @@
-package com.mygdx.game.battle;
+package com.mygdx.ecs.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.mygdx.core.GameApplication;
