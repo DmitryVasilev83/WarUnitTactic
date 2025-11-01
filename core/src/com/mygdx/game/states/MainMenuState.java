@@ -102,4 +102,16 @@ public class MainMenuState extends GameState {
     public void dispose() {
         uiStage.dispose();
     }
+
+    @Override
+    public void resize(int width, int height) {
+        uiStage.getViewport().update(width, height, true);
+
+    }
+
+    @Override
+    public void resume() {
+        // При возврате к этому состоянию обновляем размеры
+        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    }
 }

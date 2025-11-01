@@ -35,6 +35,7 @@ public class BattleState extends GameState implements InputProcessor {
     private OrthographicCamera camera;
     private Viewport viewport;
     private Stage stage;
+    private Stage uiStage;
     private EntityManager entityManager;
     private RenderSystem renderSystem;
     private GameApplication app;
@@ -49,7 +50,6 @@ public class BattleState extends GameState implements InputProcessor {
     private boolean isDragging = false;
     private float dragThreshold = 5f; // Порог для определения перетаскивания
     private float moveSpeed = 8f; // Скорость движения камеры по клавишам
-    private float mouseBorderThreshold = 5f; // Порог для движения по краю экрана
     private float minCameraX, maxCameraX, minCameraY, maxCameraY; // Границы камеры
     // флаги для отслеживания нажатий клавиш
     private boolean wPressed = false;
@@ -60,7 +60,6 @@ public class BattleState extends GameState implements InputProcessor {
     public BattleState(final GameStateManager stateManager) {
         super(stateManager);
         this.app = (GameApplication) Gdx.app.getApplicationListener();
-
         AssetManager assetManager = app.getAssetManager();
 
         if (!assetManager.isFinished()) {
@@ -98,6 +97,7 @@ public class BattleState extends GameState implements InputProcessor {
         // UI viewport — всегда на весь экран
         uiViewport = new ScreenViewport(); // <-- UI не масштабируется
         stage = new Stage(uiViewport, app.getBatch());
+        stage.getViewport().setScreenBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         entityManager = new EntityManager();
         renderSystem = new RenderSystem(entityManager, app.getBatch());
@@ -169,18 +169,20 @@ public class BattleState extends GameState implements InputProcessor {
             int screenWidth = Gdx.graphics.getWidth();
             int screenHeight = Gdx.graphics.getHeight();
 
-            if (mouseX < mouseBorderThreshold) {
+            int edgeThreshold = 20; // увеличенная зона реакции на границе, можно изменить на нужную
+
+            if (mouseX < edgeThreshold) { //  изменено с mouseBorderThreshold
                 newX -= moveAmount;
                 moved = true;
-            } else if (mouseX > screenWidth - mouseBorderThreshold) {
+            } else if (mouseX > screenWidth - edgeThreshold) {
                 newX += moveAmount;
                 moved = true;
             }
             // В LibGDX: Y=0 — внизу, Y=height — вверху
-            if (mouseY > screenHeight - mouseBorderThreshold) { // Верх экрана (мышка вверху)
+            if (mouseY > screenHeight - edgeThreshold) { // Верх экрана (мышка вверху)
                 newY += moveAmount; // Двигаем камеру вверх → увеличиваем Y
                 moved = true;
-            } else if (mouseY < mouseBorderThreshold) { // Низ экрана (мышка внизу)
+            } else if (mouseY < edgeThreshold) { // Низ экрана (мышка внизу)
                 newY -= moveAmount; // Двигаем камеру вниз → уменьшаем Y
                 moved = true;
             }
@@ -415,8 +417,9 @@ public class BattleState extends GameState implements InputProcessor {
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
+        viewport.update(width, height, false); // новое - изменено обратно
         uiViewport.update(width, height, true); // <-- обновляем UI viewport
+
         camera.update();
 
         // Пересчитываем границы камеры при изменении размера экрана
@@ -424,7 +427,6 @@ public class BattleState extends GameState implements InputProcessor {
         float worldHeight = gridMap.getHeight() * tileSize;
         calculateCameraBounds(worldWidth, worldHeight);
     }
-
 
     public GridMap getGridMap() {
         return gridMap;

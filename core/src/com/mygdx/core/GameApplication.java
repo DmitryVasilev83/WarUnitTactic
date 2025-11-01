@@ -55,6 +55,11 @@ public class GameApplication extends Game {
 		stateManager.dispose();
 	}
 
+	@Override
+	public void resize(int width, int height) {
+		stateManager.resize(width, height); // новое
+	}
+
 	public SpriteBatch getBatch() {
 		return batch;
 	}

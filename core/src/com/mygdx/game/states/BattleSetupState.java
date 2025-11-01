@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.core.GameApplication;
 import com.mygdx.game.ui.MySkin;
@@ -24,12 +25,12 @@ public class BattleSetupState extends GameState {
     private Viewport viewport;
     private Stage stage;
     private Skin skin;
-//    private BattleConfiguration config;
-//    private Stage setupUI;
 
     public BattleSetupState(final GameStateManager game) {
         super(game);
         this.game = game;
+
+
 
         camera = new OrthographicCamera();
         viewport = new FitViewport(800, 600, camera);
@@ -63,7 +64,8 @@ public class BattleSetupState extends GameState {
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.pushState(new MainMenuState(game));
+                // ПРАВИЛЬНО - возвращаемся назад
+                game.popState();
             }
         });
     }
@@ -87,6 +89,12 @@ public class BattleSetupState extends GameState {
 
     @Override
     public void handleInput() {
+
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
 
     }
 

@@ -1,6 +1,7 @@
 package com.mygdx.game.states;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.mygdx.game.ui.MySkin;
@@ -22,9 +23,14 @@ public abstract class GameState {
     public abstract void handleInput();
     public abstract void exit();
     public abstract void dispose();
-
     public void resize(int width, int height) {
         // будет переопределено в подклассах, если нужно
+    }
+
+    // вызывается при возврате к состоянию
+    public void resume() {
+        // По умолчанию обновляем размеры
+        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 }
 

@@ -28,7 +28,9 @@ public class GameStateManager{
             state.dispose();
 
             if (!states.isEmpty()) {
-                states.peek().enter();
+                GameState resumingState = states.peek();
+                resumingState.resume();
+                resumingState.enter();
             }
         }
     }
@@ -47,8 +49,9 @@ public class GameStateManager{
     }
 
     public void resize(int width, int height) {
-        if (!states.isEmpty()) {
-            states.peek().resize(width, height);
+        // Обновляем ВСЕ состояния в стеке, а не только текущее
+        for (GameState state : states) {
+            state.resize(width, height);
         }
     }
 
